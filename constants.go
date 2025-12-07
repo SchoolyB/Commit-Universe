@@ -10,7 +10,7 @@ const (
     ElementaryCharge   float64 = 1.602176634e-19 // C
     
     // Universe parameters
-    UniverseSeed       int64   = 1765084402          // RNG seed for this timeline
+    UniverseSeed       int64   = 1765085002          // RNG seed for this timeline
     BigBangCommit      int64   = 1               // The first commit
     
     // Cosmological parameters
