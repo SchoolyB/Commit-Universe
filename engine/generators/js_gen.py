@@ -355,6 +355,8 @@ if (typeof window !== 'undefined') {{
 
 def generate_creature_json(creature: Creature) -> str:
     """Generate a JSON file for a notable creature"""
+    # Escape quotes in description for JSON
+    escaped_desc = creature.description.replace('"', '\\"')
     return f'''{{
     "id": "{creature.id}",
     "common_name": "{creature.common_name}",
@@ -397,12 +399,14 @@ def generate_creature_json(creature: Creature) -> str:
     }},
 
     "discovered_at_commit": {creature.discovered_at_commit},
-    "description": "{creature.description.replace('"', '\\"')}"
+    "description": "{escaped_desc}"
 }}'''
 
 
 def generate_flora_json(flora: Flora) -> str:
     """Generate a JSON file for notable flora"""
+    # Escape quotes in description for JSON
+    escaped_desc = flora.description.replace('"', '\\"')
     return f'''{{
     "id": "{flora.id}",
     "common_name": "{flora.common_name}",
@@ -428,5 +432,5 @@ def generate_flora_json(flora: Flora) -> str:
 
     "special_traits": {flora.special_traits},
     "discovered_at_commit": {flora.discovered_at_commit},
-    "description": "{flora.description.replace('"', '\\"')}"
+    "description": "{escaped_desc}"
 }}'''
