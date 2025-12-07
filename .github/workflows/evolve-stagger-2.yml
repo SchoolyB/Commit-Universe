@@ -41,7 +41,4 @@ jobs:
             --events ${{ steps.events.outputs.count }}
 
       - name: 📤 Push Changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git push
-          fi
+        run: git push

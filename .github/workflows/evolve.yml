@@ -70,12 +70,8 @@ jobs:
       - name: 📤 Push Changes
         if: github.event.inputs.dry_run != 'true'
         run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            git push
-            echo "🌌 Universe evolved!"
-          else
-            echo "⏳ Universe is stable"
-          fi
+          git push
+          echo "🌌 Universe evolved!"
       
       - name: 📊 Summary
         run: |
