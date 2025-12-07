@@ -1,0 +1,89 @@
+# Commit Universe - Automated Evolution
+# 
+# Runs every 5 minutes to evolve the universe.
+# Each run generates 1-3 cosmic events and commits them.
+
+name: 🌌 Evolve Universe
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # Every 5 minutes
+  
+  workflow_dispatch:
+    inputs:
+      events:
+        description: 'Number of events to generate'
+        required: false
+        default: '2'
+      dry_run:
+        description: 'Dry run (no commits)'
+        required: false
+        default: 'false'
+
+concurrency:
+  group: universe-evolution
+  cancel-in-progress: false
+
+jobs:
+  evolve:
+    name: 🚀 Cosmic Evolution
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Universe
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: 🔧 Configure Git
+        run: |
+          git config user.name "Commit Universe Engine"
+          git config user.email "universe@commit-universe.dev"
+      
+      - name: 🎲 Determine Event Count
+        id: events
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "count=${{ github.event.inputs.events }}" >> $GITHUB_OUTPUT
+          else
+            # Random 1-3 events per run
+            echo "count=$((1 + RANDOM % 3))" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: 🌌 Evolve Universe
+        run: |
+          DRY_RUN=""
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then
+            DRY_RUN="--dry-run"
+          fi
+          
+          python -m engine.main \
+            --universe . \
+            --events ${{ steps.events.outputs.count }} \
+            $DRY_RUN
+      
+      - name: 📤 Push Changes
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git push
+            echo "🌌 Universe evolved!"
+          else
+            echo "⏳ Universe is stable"
+          fi
+      
+      - name: 📊 Summary
+        run: |
+          echo "## 🌌 Universe Evolution" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Events:** ${{ steps.events.outputs.count }}" >> $GITHUB_STEP_SUMMARY
+          if [ -f "epoch.json" ]; then
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat epoch.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          fi
