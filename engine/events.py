@@ -81,6 +81,7 @@ class EventGenerator:
         self._planets_created = 0
         self._clusters_created = set()
         self._cluster_galaxy_counts = {}  # Track galaxy counts per cluster
+        self._cluster_formed_at = {}  # Track cluster formation commits
     
     def generate_events(self, count: int = 1) -> List[Event]:
         """Generate one or more events"""
@@ -263,16 +264,31 @@ class EventGenerator:
         # Create or update cluster
         is_new_cluster = cluster_id not in self.state.clusters and cluster_id not in self._clusters_created
 
+        # Determine formed_at_commit - preserve original for existing clusters
+        if is_new_cluster:
+            formed_at = self.commit
+            self._clusters_created.add(cluster_id)
+            self._cluster_formed_at[cluster_id] = formed_at
+        else:
+            # Use cached value or read from state (first galaxy in cluster)
+            if cluster_id in self._cluster_formed_at:
+                formed_at = self._cluster_formed_at[cluster_id]
+            else:
+                # Find earliest galaxy formation in this cluster
+                cluster_galaxies = [g for g in self.state.galaxies if cluster_id in g.path]
+                if cluster_galaxies:
+                    formed_at = min(g.formed_at_commit for g in cluster_galaxies)
+                else:
+                    formed_at = 1  # Default to Big Bang
+                self._cluster_formed_at[cluster_id] = formed_at
+
         # Always regenerate cluster.toml with updated galaxy count
         cluster_content = generate_cluster_toml(
             cluster_id=cluster_id,
-            formed_at_commit=self.commit if is_new_cluster else self.commit,
+            formed_at_commit=formed_at,
             galaxy_count=new_galaxy_count
         )
         files_to_create.append((f"{cluster_path}/cluster.toml", cluster_content))
-
-        if is_new_cluster:
-            self._clusters_created.add(cluster_id)
 
         return Event(
             event_type=EventType.GALAXY_FORM,

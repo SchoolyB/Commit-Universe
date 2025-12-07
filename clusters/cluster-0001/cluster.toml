@@ -4,7 +4,7 @@
 [cluster]
 id = "cluster-0001"
 # name = unnamed
-formed_at_commit = 5
+formed_at_commit = 1
 age_billion_years = 0.00
 
 [cluster.position]
@@ -13,10 +13,10 @@ y = 0.000000
 z = 0.000000
 
 [cluster.stats]
-galaxy_count = 7
+galaxy_count = 8
 total_mass_solar = 0.00e+00
 diameter_mly = 0.00
 
 [cluster.metadata]
-last_updated_commit = 5
+last_updated_commit = 1
 notable_features = []
