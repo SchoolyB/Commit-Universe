@@ -83,7 +83,8 @@ class CommitUniverse:
         # Update epoch once at the end
         if not self.dry_run and events:
             self._update_epoch(state, len(events))
-        
+            self._git_commit(f"tick: universe advances to commit {state.epoch.commit_count + len(events)}")
+
         return commit_messages
     
     def _load_state(self) -> UniverseState:
