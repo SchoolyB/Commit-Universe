@@ -5,7 +5,7 @@ Each generator creates files in a specific language for different cosmic objects
 """
 
 from .go_gen import generate_constants_go
-from .toml_gen import generate_cluster_toml
+from .toml_gen import generate_cluster_toml, update_cluster_stats, get_cluster_galaxy_count
 from .rust_gen import generate_galaxy_rs
 from .c_gen import generate_star_c
 from .python_gen import generate_planet_py
@@ -20,6 +20,8 @@ from .esoteric_gen import generate_anomaly_bf, generate_ruins_cob
 __all__ = [
     "generate_constants_go",
     "generate_cluster_toml",
+    "update_cluster_stats",
+    "get_cluster_galaxy_count",
     "generate_galaxy_rs",
     "generate_star_c",
     "generate_planet_py",

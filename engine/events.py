@@ -80,6 +80,7 @@ class EventGenerator:
         self._stars_created = 0
         self._planets_created = 0
         self._clusters_created = set()
+        self._cluster_galaxy_counts = {}  # Track galaxy counts per cluster
     
     def generate_events(self, count: int = 1) -> List[Event]:
         """Generate one or more events"""
@@ -218,49 +219,61 @@ class EventGenerator:
     def _generate_galaxy_event(self) -> Event:
         """Generate a new galaxy"""
         from .generators import generate_galaxy_rs, generate_cluster_toml
-        
+
         # Track total galaxies (existing + created this run)
         total_galaxies = self.state.total_galaxies + self._galaxies_created
-        total_clusters = len(self.state.clusters) + len(self._clusters_created)
-        
+
         # Determine cluster (create if needed, or add to existing)
         cluster_num = (total_galaxies // 100) + 1  # ~100 galaxies per cluster
         cluster_id = f"cluster-{cluster_num:04d}"
-        
+
         galaxy_id = f"galaxy-{total_galaxies + 1:04d}"
-        
+
         # Random galaxy properties
         galaxy_type = random.choices(GALAXY_TYPES, GALAXY_WEIGHTS)[0]
         diameter = random.randint(20000, 150000)
-        
+
         # Generate files
         cluster_path = f"clusters/{cluster_id}"
         galaxy_path = f"{cluster_path}/galaxies/{galaxy_id}"
-        
+
         galaxy_content = generate_galaxy_rs(
             galaxy_id=galaxy_id,
             galaxy_type=galaxy_type,
             diameter_light_years=diameter,
             formed_at_commit=self.commit
         )
-        
+
         files_to_create = [
             (f"{galaxy_path}/galaxy.rs", galaxy_content),
         ]
-        
-        # Create cluster if new
-        is_new_cluster = cluster_id not in self.state.clusters and cluster_id not in self._clusters_created
-        if is_new_cluster:
-            cluster_content = generate_cluster_toml(
-                cluster_id=cluster_id,
-                formed_at_commit=self.commit
-            )
-            files_to_create.append((f"{cluster_path}/cluster.toml", cluster_content))
-            self._clusters_created.add(cluster_id)
-        
+
         # Track this creation
         self._galaxies_created += 1
-        
+
+        # Track galaxies per cluster for stats
+        if cluster_id not in self._cluster_galaxy_counts:
+            # Count existing galaxies in this cluster from state
+            existing_count = sum(1 for g in self.state.galaxies
+                               if cluster_id in g.path)
+            self._cluster_galaxy_counts[cluster_id] = existing_count
+        self._cluster_galaxy_counts[cluster_id] += 1
+        new_galaxy_count = self._cluster_galaxy_counts[cluster_id]
+
+        # Create or update cluster
+        is_new_cluster = cluster_id not in self.state.clusters and cluster_id not in self._clusters_created
+
+        # Always regenerate cluster.toml with updated galaxy count
+        cluster_content = generate_cluster_toml(
+            cluster_id=cluster_id,
+            formed_at_commit=self.commit if is_new_cluster else self.commit,
+            galaxy_count=new_galaxy_count
+        )
+        files_to_create.append((f"{cluster_path}/cluster.toml", cluster_content))
+
+        if is_new_cluster:
+            self._clusters_created.add(cluster_id)
+
         return Event(
             event_type=EventType.GALAXY_FORM,
             location=galaxy_path,

@@ -2,7 +2,53 @@
 TOML generator - Galaxy clusters
 """
 
+import re
+from pathlib import Path
 from typing import Optional
+
+
+def update_cluster_stats(cluster_path: Path, galaxy_count: int = None,
+                         total_mass_solar: float = None, diameter_mly: float = None,
+                         last_updated_commit: int = None) -> str:
+    """Read and update cluster.toml stats, return new content"""
+    content = cluster_path.read_text()
+
+    if galaxy_count is not None:
+        content = re.sub(
+            r'galaxy_count = \d+',
+            f'galaxy_count = {galaxy_count}',
+            content
+        )
+
+    if total_mass_solar is not None:
+        content = re.sub(
+            r'total_mass_solar = [\d.e+-]+',
+            f'total_mass_solar = {total_mass_solar:.2e}',
+            content
+        )
+
+    if diameter_mly is not None:
+        content = re.sub(
+            r'diameter_mly = [\d.]+',
+            f'diameter_mly = {diameter_mly:.2f}',
+            content
+        )
+
+    if last_updated_commit is not None:
+        content = re.sub(
+            r'last_updated_commit = \d+',
+            f'last_updated_commit = {last_updated_commit}',
+            content
+        )
+
+    return content
+
+
+def get_cluster_galaxy_count(cluster_path: Path) -> int:
+    """Read current galaxy count from cluster.toml"""
+    content = cluster_path.read_text()
+    match = re.search(r'galaxy_count = (\d+)', content)
+    return int(match.group(1)) if match else 0
 
 
 def generate_cluster_toml(
