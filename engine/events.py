@@ -286,6 +286,7 @@ class EventGenerator:
         cluster_content = generate_cluster_toml(
             cluster_id=cluster_id,
             formed_at_commit=formed_at,
+            last_updated_commit=self.commit,
             galaxy_count=new_galaxy_count
         )
         files_to_create.append((f"{cluster_path}/cluster.toml", cluster_content))
