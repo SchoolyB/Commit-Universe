@@ -90,7 +90,29 @@ class CommitUniverse:
     def _load_state(self) -> UniverseState:
         """Load current universe state"""
         reader = UniverseReader(self.universe_path)
-        return reader.read_state()
+        state = reader.read_state()
+
+        # Sync epoch commit_count with actual git commit count
+        actual_commit_count = self._get_git_commit_count()
+        if actual_commit_count != state.epoch.commit_count:
+            print(f"⚠️  Syncing epoch: {state.epoch.commit_count} → {actual_commit_count}")
+            state.epoch.commit_count = actual_commit_count
+
+        return state
+
+    def _get_git_commit_count(self) -> int:
+        """Get the actual git commit count"""
+        try:
+            result = subprocess.run(
+                ["git", "rev-list", "--count", "HEAD"],
+                cwd=self.universe_path,
+                check=True,
+                capture_output=True,
+                text=True
+            )
+            return int(result.stdout.strip())
+        except (subprocess.CalledProcessError, ValueError):
+            return 0
     
     def _apply_event(self, event: Event, state: UniverseState):
         """Apply an event's changes to the filesystem"""

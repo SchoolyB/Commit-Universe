@@ -282,11 +282,15 @@ class EventGenerator:
         galaxy_type = random.choices(GALAXY_TYPES, GALAXY_WEIGHTS)[0]
         diameter = random.randint(20000, 150000)
 
+        # Generate a scientific designation for the galaxy
+        galaxy_name = generate_galaxy_name(named_by_civ=False)
+
         cluster_path = f"clusters/{cluster_id}"
         galaxy_path = f"{cluster_path}/galaxies/{galaxy_id}"
 
         galaxy_content = generate_galaxy_rs(
             galaxy_id=galaxy_id,
+            name=galaxy_name,
             galaxy_type=galaxy_type,
             diameter_light_years=diameter,
             formed_at_commit=self.commit
@@ -327,8 +331,8 @@ class EventGenerator:
         return Event(
             event_type=EventType.GALAXY_FORM,
             location=galaxy_path,
-            description=f"A {galaxy_type} galaxy coalesces from primordial matter",
-            commit_message=f"form({galaxy_path}): {galaxy_type} galaxy emerges from the cosmic dark",
+            description=f"A {galaxy_type} galaxy coalesces from primordial matter ({galaxy_name})",
+            commit_message=f"form({galaxy_path}): {galaxy_name} - {galaxy_type} galaxy emerges from the cosmic dark",
             files_to_create=files_to_create,
             files_to_modify=[],
             magnitude=5.0
