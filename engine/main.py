@@ -83,7 +83,8 @@ class CommitUniverse:
         # Update epoch once at the end
         if not self.dry_run and events:
             self._update_epoch(state, len(events))
-            self._git_commit(f"tick: universe advances to commit {state.epoch.commit_count + len(events)}")
+            actual_count = self._get_git_commit_count()
+            self._git_commit(f"tick: universe advances to commit {actual_count + 1}")
 
         return commit_messages
     
@@ -110,8 +111,29 @@ class CommitUniverse:
                 capture_output=True,
                 text=True
             )
-            return int(result.stdout.strip())
+            count = int(result.stdout.strip())
+            # Sanity check - if count seems way too low, something's wrong (shallow clone?)
+            if count < 100:
+                # Try to read from epoch.json as fallback
+                epoch_path = self.universe_path / "epoch.json"
+                if epoch_path.exists():
+                    import json
+                    with open(epoch_path) as f:
+                        data = json.load(f)
+                        epoch_count = data.get("commit_count", 0)
+                        # Use whichever is higher
+                        return max(count, epoch_count)
+            return count
         except (subprocess.CalledProcessError, ValueError):
+            # Fallback: read from epoch.json
+            try:
+                epoch_path = self.universe_path / "epoch.json"
+                if epoch_path.exists():
+                    import json
+                    with open(epoch_path) as f:
+                        return json.load(f).get("commit_count", 0)
+            except:
+                pass
             return 0
     
     def _apply_event(self, event: Event, state: UniverseState):
@@ -137,13 +159,16 @@ class CommitUniverse:
     def _update_epoch(self, state: UniverseState, events_processed: int):
         """Update the epoch file"""
         epoch_path = self.universe_path / "epoch.json"
-        
+
         # Calculate time passage based on current era
         time_scale = self._get_current_time_scale(state)
         time_passed = time_scale * events_processed
-        
+
+        # Get actual git commit count (after commits were made)
+        actual_commit_count = self._get_git_commit_count()
+
         new_epoch = {
-            "commit_count": state.epoch.commit_count + events_processed,
+            "commit_count": actual_commit_count,
             "cosmic_age_million_years": state.epoch.cosmic_age_million_years + time_passed,
             "current_era": self._determine_era(state),
             "last_updated": datetime.now().isoformat(),
