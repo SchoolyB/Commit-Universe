@@ -1,36 +1,85 @@
 # 🌌 Commit Universe
 
-> A procedurally generated universe, evolving through git commits.
+> A procedurally generated universe that evolves through git commits.
 
-## The Beginning
+**This repository IS the universe.** Every commit represents cosmic time passing. Stars ignite, planets form, life emerges, civilizations rise and fall—all told through version control.
 
-This universe was born at commit #1, the Big Bang.
-
-**Seed:** 1765085002
-**Created:** 2025-12-06T23:23:22.277236
-
-## How It Works
-
-This repository IS the universe. Every commit represents cosmic time passing.
-Stars form, planets coalesce, life emerges, civilizations rise and fall.
-
-**The code doesn't run. It just exists.**
-
-Browse the directories to explore galaxies, star systems, and worlds.
-Each file type tells a different part of the story.
-
-## Stats
-
-- **Commit:** 1
-- **Cosmic Age:** 0 Myr
-- **Galaxies:** 0
-- **Stars:** 0
-- **Planets:** 0
-- **Life-bearing worlds:** 0
-- **Civilizations:** 0
-
-*Stats updated each commit by the simulation engine.*
+The code doesn't run. It just *exists*.
 
 ---
 
-*The universe doesn't care if anyone is watching. It just keeps going.*
+## 🚀 Interact With The Universe
+
+Your actions shape the cosmos!
+
+| Action | Workflow | Effect |
+|--------|----------|--------|
+| ⭐ **Star this repo** | `star-event.yml` | Triggers 5 cosmic events |
+| 📋 **Open an issue** | `issue-event.yml` | Creates 3 cosmic ripples |
+| ⏰ **Just wait** | `evolve.yml` + staggered waves | Auto-generates 1-3 events every ~2 min |
+
+**Every interaction adds to the universe's history.**
+
+---
+
+## 📊 Universe Stats
+
+<!-- These update automatically with each commit -->
+- **Cosmic Age:** Growing every ~2 minutes
+- **Galaxies:** Expanding
+- **Stars:** Igniting
+- **Planets:** Forming
+- **Life:** Emerging
+- **Civilizations:** Rising (and falling)
+
+---
+
+## 🌍 The Polyglot Universe
+
+Different cosmic objects are stored in different languages:
+
+| Object | Language |
+|--------|----------|
+| Constants | Go |
+| Clusters | TOML |
+| Galaxies | Rust |
+| Stars | C |
+| Planets | Python |
+| Moons | Lua |
+| Atmospheres | JSON |
+| Life | JavaScript |
+| Civilizations | TypeScript |
+| Chronicles | Markdown |
+| Anomalies | Brainfuck |
+
+---
+
+## Contributing
+
+### Name Something
+Find an unnamed star, planet, or galaxy and submit a PR to give it a name!
+
+### Add Lore
+Expand a civilization's chronicle or a planet's history. Tell their story.
+
+### Discover
+Add detail to existing objects—describe a planet's unique features or a civilization's culture.
+
+---
+
+## ⚡ How It Works
+
+A simulation engine runs automatically every few minutes via GitHub Actions:
+1. Loads the current universe state
+2. Rolls probabilistic cosmic events
+3. Generates new files (stars, planets, life...)
+4. Commits the changes
+5. Pushes to the repository
+
+**~600-1800 commits per day.** The universe never stops.
+
+---
+
+## 📜 License
+
+MIT License - Copyright (c) 2025-Present Marshall Burns

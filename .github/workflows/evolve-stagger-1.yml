@@ -1,0 +1,47 @@
+# Staggered Evolution - Offset 1 minute
+name: 🌌 Evolve Universe (Wave 2)
+
+on:
+  schedule:
+    - cron: '1-59/5 * * * *'  # Minutes 1, 6, 11, 16...
+
+concurrency:
+  group: universe-evolution
+  cancel-in-progress: false
+
+jobs:
+  evolve:
+    name: 🚀 Cosmic Evolution
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Universe
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🔧 Configure Git
+        run: |
+          git config user.name "Commit Universe Engine"
+          git config user.email "universe@commit-universe.dev"
+
+      - name: 🎲 Determine Event Count
+        id: events
+        run: echo "count=$((1 + RANDOM % 3))" >> $GITHUB_OUTPUT
+
+      - name: 🌌 Evolve Universe
+        run: |
+          python -m engine.main \
+            --universe . \
+            --events ${{ steps.events.outputs.count }}
+
+      - name: 📤 Push Changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git push
+          fi

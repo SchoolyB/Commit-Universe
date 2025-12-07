@@ -1,0 +1,39 @@
+# When someone opens an issue, cosmic ripples occur
+name: 📋 Issue Triggers Cosmic Ripple
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  cosmic-ripple:
+    name: 🌊 Cosmic Ripple
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Universe
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🔧 Configure Git
+        run: |
+          git config user.name "Commit Universe Engine"
+          git config user.email "universe@commit-universe.dev"
+
+      - name: 🌊 Generate Ripple Events
+        run: |
+          python -m engine.main \
+            --universe . \
+            --events 3
+
+      - name: 📤 Push Changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git push
+          fi
